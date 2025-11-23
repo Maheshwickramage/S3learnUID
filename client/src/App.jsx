@@ -138,11 +138,21 @@ function AuthModal({ onClose, onSuccess }) {
   );
 }
 
-// Preview Modal
+// Preview Modal with Interactive Demo
 function PreviewModal({ component, onClose }) {
+  const [viewMode, setViewMode] = useState('preview'); // 'preview' or 'interactive'
+  const [iframeLoaded, setIframeLoaded] = useState(false);
+  
+  // Generate interactive preview URL (CodeSandbox embed URL)
+  const getInteractivePreviewUrl = () => {
+    // For now, we'll use the preview image, but you can later add a demoUrl field to components
+    // that points to CodeSandbox, StackBlitz, or your own hosted demo
+    return component.demoUrl || null;
+  };
+
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-gray-900 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-gray-700" onClick={e => e.stopPropagation()}>
+      <div className="bg-gray-900 rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden border border-gray-700" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
           <div>
             <h3 className="text-xl font-bold text-white">{component.name}</h3>
@@ -161,23 +171,60 @@ function PreviewModal({ component, onClose }) {
             </div>
           </div>
           <div className="flex gap-3">
-            <button onClick={() => api.downloadComponent(component._id)} className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg text-white font-medium flex items-center gap-2">
+            {getInteractivePreviewUrl() && (
+              <div className="flex gap-1 bg-gray-800 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode('preview')}
+                  className={`px-3 py-1.5 rounded text-sm transition ${
+                    viewMode === 'preview' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <Eye size={16} className="inline mr-1" /> Preview
+                </button>
+                <button
+                  onClick={() => setViewMode('interactive')}
+                  className={`px-3 py-1.5 rounded text-sm transition ${
+                    viewMode === 'interactive' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <Zap size={16} className="inline mr-1" /> Interactive
+                </button>
+              </div>
+            )}
+            <button onClick={() => api.downloadComponent(component._id)} className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg text-white font-medium flex items-center gap-2 hover:opacity-90 transition">
               <Download size={18} /> Download
             </button>
-            <button onClick={onClose} className="p-2 hover:bg-gray-700 rounded-lg">
+            <button onClick={onClose} className="p-2 hover:bg-gray-700 rounded-lg transition">
               <X className="text-gray-400" size={24} />
             </button>
           </div>
         </div>
         <div className="p-6 bg-gray-950">
-          <div className="aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-indigo-500/20 to-purple-600/20 flex items-center justify-center">
-            {component.previewImage ? (
-              <img src={api.getPreviewUrl(component.previewImage)} alt={component.name} className="w-full h-full object-cover" />
+          <div className="rounded-xl overflow-hidden bg-gradient-to-br from-indigo-500/20 to-purple-600/20" style={{ height: '70vh' }}>
+            {viewMode === 'interactive' && getInteractivePreviewUrl() ? (
+              <div className="relative w-full h-full">
+                {!iframeLoaded && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <RefreshCw className="animate-spin text-indigo-400" size={32} />
+                  </div>
+                )}
+                <iframe
+                  src={getInteractivePreviewUrl()}
+                  className="w-full h-full bg-white"
+                  onLoad={() => setIframeLoaded(true)}
+                  title={`${component.name} interactive demo`}
+                  sandbox="allow-scripts allow-same-origin allow-modals"
+                />
+              </div>
+            ) : component.previewImage ? (
+              <img src={api.getPreviewUrl(component.previewImage)} alt={component.name} className="w-full h-full object-contain" />
             ) : (
-              <div className="text-center p-8">
-                <Layers className="mx-auto text-indigo-400 mb-4" size={64} />
-                <p className="text-white text-xl font-semibold">{component.name}</p>
-                <p className="text-gray-400 mt-2">{component.description}</p>
+              <div className="flex items-center justify-center h-full text-center p-8">
+                <div>
+                  <Layers className="mx-auto text-indigo-400 mb-4" size={64} />
+                  <p className="text-white text-xl font-semibold">{component.name}</p>
+                  <p className="text-gray-400 mt-2">{component.description}</p>
+                </div>
               </div>
             )}
           </div>
@@ -195,7 +242,7 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState(null);
   const [error, setError] = useState('');
-  const [form, setForm] = useState({ name: '', category: 'Dashboard', tags: '', description: '' });
+  const [form, setForm] = useState({ name: '', category: 'Dashboard', tags: '', description: '', demoUrl: '' });
   const [files, setFiles] = useState({ zip: null, preview: null });
   const [activeTab, setActiveTab] = useState('stats'); // stats, upload, profile
 
@@ -226,13 +273,14 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
     formData.append('category', form.category);
     formData.append('tags', form.tags);
     formData.append('description', form.description);
+    if (form.demoUrl) formData.append('demoUrl', form.demoUrl);
     formData.append('zipFile', files.zip);
     formData.append('previewImage', files.preview);
 
     try {
       const data = await api.uploadComponent(formData, token);
       if (data.success) {
-        setForm({ name: '', category: 'Dashboard', tags: '', description: '' });
+        setForm({ name: '', category: 'Dashboard', tags: '', description: '', demoUrl: '' });
         setFiles({ zip: null, preview: null });
         alert('🎉 Component uploaded successfully!');
         if (onUploadSuccess) onUploadSuccess();
@@ -412,6 +460,14 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
                 className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-indigo-500 focus:outline-none resize-none"
               />
 
+              <input
+                type="url"
+                placeholder="Demo URL (optional) - CodeSandbox, StackBlitz, or live demo"
+                value={form.demoUrl || ''}
+                onChange={e => setForm({...form, demoUrl: e.target.value})}
+                className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-indigo-500 focus:outline-none"
+              />
+
               <div className="grid grid-cols-2 gap-3">
                 <label className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition ${files.zip ? 'border-emerald-500 bg-emerald-500/10' : 'border-gray-600 hover:border-indigo-500'}`}>
                   <Upload className={`mx-auto mb-1 ${files.zip ? 'text-emerald-400' : 'text-gray-500'}`} size={24} />
@@ -437,10 +493,18 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
                 {loading ? <><RefreshCw size={18} className="animate-spin" /> Uploading...</> : <><Plus size={18} /> Upload Component</>}
               </button>
 
-              <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-lg p-4">
-                <p className="text-indigo-300 text-sm">
-                  💡 <strong>Tip:</strong> High-quality components with good previews get more downloads and help you reach milestones faster!
-                </p>
+              <div className="space-y-2">
+                <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-lg p-4">
+                  <p className="text-indigo-300 text-sm">
+                    💡 <strong>Tip:</strong> High-quality components with good previews get more downloads and help you reach milestones faster!
+                  </p>
+                </div>
+                <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4">
+                  <p className="text-purple-300 text-sm">
+                    <Zap size={14} className="inline mr-1" />
+                    <strong>Interactive Demo:</strong> Add a CodeSandbox or StackBlitz URL so users can try your component live!
+                  </p>
+                </div>
               </div>
             </div>
           )}

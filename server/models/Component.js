@@ -13,6 +13,7 @@ const componentSchema = new mongoose.Schema({
   tags: [{ type: String, trim: true, lowercase: true }],
   previewImage: { type: String, required: true },
   zipFile: { type: String, required: true },
+  demoUrl: { type: String, trim: true }, // URL to live interactive demo (CodeSandbox, StackBlitz, etc)
   downloads: { type: Number, default: 0 },
   stars: { type: Number, default: 5.0, min: 0, max: 5 },
   version: { type: String, default: '1.0.0' },

@@ -36,7 +36,7 @@ router.get('/verify', adminAuth, (req, res) => {
 // Upload component (with user auth)
 router.post('/upload', authMiddleware, upload.fields([{ name: 'zipFile', maxCount: 1 }, { name: 'previewImage', maxCount: 1 }]), async (req, res) => {
   try {
-    const { name, description, category, tags, version } = req.body;
+    const { name, description, category, tags, version, demoUrl } = req.body;
     if (!req.files?.zipFile?.[0] || !req.files?.previewImage?.[0]) {
       return res.status(400).json({ success: false, message: 'Both files required' });
     }
@@ -48,6 +48,7 @@ router.post('/upload', authMiddleware, upload.fields([{ name: 'zipFile', maxCoun
       tags: tags ? tags.split(',').map(t => t.trim().toLowerCase()) : [],
       previewImage: req.files.previewImage[0].filename,
       zipFile: req.files.zipFile[0].filename,
+      demoUrl: demoUrl || '',
       version: version || '1.0.0',
       creator: req.user._id,
       creatorName: req.user.displayName || req.user.username
