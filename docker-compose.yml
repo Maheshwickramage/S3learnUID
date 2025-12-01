@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: s3learn-server
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - MONGODB_URI=mongodb+srv://new_user1998:Darsh1998@cluster0.8rfeoyy.mongodb.net/s3learnUID?retryWrites=true&w=majority
+      - JWT_SECRET=${JWT_SECRET:-your-secret-key-change-in-production}
+      - MAX_FILE_SIZE=104857600
+    volumes:
+      - ./server/uploads:/app/uploads
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: s3learn-client
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - server
