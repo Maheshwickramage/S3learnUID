@@ -930,7 +930,7 @@ export default function App() {
                       <button onClick={() => setPreview(comp)} className="flex-1 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition">
                         <Eye size={16} /> Preview
                       </button>
-                      <button onClick={() => api.downloadComponent(comp._id)} className="flex-1 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg text-sm font-medium flex items-center justify-center gap-2 hover:opacity-90 transition">
+                      <button onClick={() => window.open(comp.zipUrl, '_blank')} className="flex-1 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg text-sm font-medium flex items-center justify-center gap-2 hover:opacity-90 transition">
                         <Download size={16} /> Download
                       </button>
                     </div>
