@@ -1,14 +1,36 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const multerS3 = require('multer-s3');
 const path = require('path');
-const fs = require('fs');
+const { DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const s3Client = require('../config/s3');
 const Component = require('../models/Component');
 const User = require('../models/User');
 const adminAuth = require('../middleware/adminAuth');
 const { authMiddleware } = require('./auth');
 
-const storage = multer.diskStorage({
+const USE_S3 = process.env.USE_S3 === 'true';
+const S3_BUCKET = process.env.S3_BUCKET_NAME;
+
+// S3 Storage
+const s3Storage = multerS3({
+  s3: s3Client,
+  bucket: S3_BUCKET,
+  metadata: (req, file, cb) => {
+    cb(null, { fieldName: file.fieldname });
+  },
+  key: (req, file, cb) => {
+    let folder = 'previews';
+    if (file.fieldname === 'zipFile') folder = 'zips';
+    else if (file.fieldname === 'previewVideo') folder = 'videos';
+    const filename = `${folder}/${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(file.originalname)}`;
+    cb(null, filename);
+  }
+});
+
+// Local Storage (fallback)
+const localStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     let dest = 'uploads/previews';
     if (file.fieldname === 'zipFile') dest = 'uploads/zips';
@@ -21,7 +43,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({
-  storage,
+  storage: USE_S3 ? s3Storage : localStorage,
   limits: { fileSize: parseInt(process.env.MAX_FILE_SIZE) || 52428800 },
   fileFilter: (req, file, cb) => {
     if (file.fieldname === 'zipFile' && (file.mimetype === 'application/zip' || file.originalname.endsWith('.zip'))) {
@@ -35,6 +57,26 @@ const upload = multer({
     }
   }
 });
+
+// Helper to delete S3 file
+async function deleteS3File(key) {
+  if (!USE_S3 || !key) return;
+  try {
+    await s3Client.send(new DeleteObjectCommand({
+      Bucket: S3_BUCKET,
+      Key: key
+    }));
+  } catch (error) {
+    console.error('S3 delete error:', error);
+  }
+}
+
+// Helper to delete local file
+function deleteLocalFile(filepath) {
+  if (USE_S3) return;
+  const fs = require('fs');
+  fs.unlink(path.join(__dirname, '..', filepath), () => {});
+}
 
 // Verify admin key (legacy support - only for old admin key check)
 router.get('/verify', adminAuth, (req, res) => {
@@ -54,9 +96,9 @@ router.post('/upload', authMiddleware, upload.fields([{ name: 'zipFile', maxCoun
       description: description || '',
       category,
       tags: tags ? tags.split(',').map(t => t.trim().toLowerCase()) : [],
-      previewImage: req.files.previewImage[0].filename,
-      previewVideo: req.files.previewVideo?.[0]?.filename,
-      zipFile: req.files.zipFile[0].filename,
+      previewImage: USE_S3 ? req.files.previewImage[0].key : req.files.previewImage[0].filename,
+      previewVideo: req.files.previewVideo?.[0] ? (USE_S3 ? req.files.previewVideo[0].key : req.files.previewVideo[0].filename) : undefined,
+      zipFile: USE_S3 ? req.files.zipFile[0].key : req.files.zipFile[0].filename,
       demoUrl: demoUrl || '',
       version: version || '1.0.0',
       creator: req.user._id,
@@ -98,18 +140,32 @@ router.put('/components/:id', authMiddleware, upload.fields([{ name: 'zipFile', 
     if (isFeatured !== undefined) component.isFeatured = isFeatured === 'true';
     
     if (req.files?.zipFile?.[0]) {
-      fs.unlink(path.join(__dirname, '../uploads/zips', component.zipFile), () => {});
-      component.zipFile = req.files.zipFile[0].filename;
+      if (USE_S3) {
+        await deleteS3File(component.zipFile);
+        component.zipFile = req.files.zipFile[0].key;
+      } else {
+        deleteLocalFile(`uploads/zips/${component.zipFile}`);
+        component.zipFile = req.files.zipFile[0].filename;
+      }
     }
     if (req.files?.previewImage?.[0]) {
-      fs.unlink(path.join(__dirname, '../uploads/previews', component.previewImage), () => {});
-      component.previewImage = req.files.previewImage[0].filename;
+      if (USE_S3) {
+        await deleteS3File(component.previewImage);
+        component.previewImage = req.files.previewImage[0].key;
+      } else {
+        deleteLocalFile(`uploads/previews/${component.previewImage}`);
+        component.previewImage = req.files.previewImage[0].filename;
+      }
     }
     if (req.files?.previewVideo?.[0]) {
       if (component.previewVideo) {
-        fs.unlink(path.join(__dirname, '../uploads/videos', component.previewVideo), () => {});
+        if (USE_S3) {
+          await deleteS3File(component.previewVideo);
+        } else {
+          deleteLocalFile(`uploads/videos/${component.previewVideo}`);
+        }
       }
-      component.previewVideo = req.files.previewVideo[0].filename;
+      component.previewVideo = USE_S3 ? req.files.previewVideo[0].key : req.files.previewVideo[0].filename;
     }
     
     await component.save();
@@ -125,11 +181,16 @@ router.delete('/components/:id', authMiddleware, async (req, res) => {
     const component = await Component.findById(req.params.id);
     if (!component) return res.status(404).json({ success: false, message: 'Not found' });
     
-    fs.unlink(path.join(__dirname, '../uploads/zips', component.zipFile), () => {});
-    fs.unlink(path.join(__dirname, '../uploads/previews', component.previewImage), () => {});
-    if (component.previewVideo) {
-      fs.unlink(path.join(__dirname, '../uploads/videos', component.previewVideo), () => {});
+    if (USE_S3) {
+      await deleteS3File(component.zipFile);
+      await deleteS3File(component.previewImage);
+      if (component.previewVideo) await deleteS3File(component.previewVideo);
+    } else {
+      deleteLocalFile(`uploads/zips/${component.zipFile}`);
+      deleteLocalFile(`uploads/previews/${component.previewImage}`);
+      if (component.previewVideo) deleteLocalFile(`uploads/videos/${component.previewVideo}`);
     }
+    
     await Component.findByIdAndDelete(req.params.id);
     
     res.json({ success: true, message: 'Deleted' });

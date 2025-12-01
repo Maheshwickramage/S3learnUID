@@ -42,14 +42,24 @@ componentSchema.index({ category: 1 });
 componentSchema.index({ downloads: -1 });
 
 componentSchema.virtual('previewUrl').get(function() {
+  if (process.env.USE_S3 === 'true') {
+    return `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/${this.previewImage}`;
+  }
   return `/uploads/previews/${this.previewImage}`;
 });
 
 componentSchema.virtual('previewVideoUrl').get(function() {
-  return this.previewVideo ? `/uploads/videos/${this.previewVideo}` : null;
+  if (!this.previewVideo) return null;
+  if (process.env.USE_S3 === 'true') {
+    return `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/${this.previewVideo}`;
+  }
+  return `/uploads/videos/${this.previewVideo}`;
 });
 
 componentSchema.virtual('zipUrl').get(function() {
+  if (process.env.USE_S3 === 'true') {
+    return `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/${this.zipFile}`;
+  }
   return `/uploads/zips/${this.zipFile}`;
 });
 
