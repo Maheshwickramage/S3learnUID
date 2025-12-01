@@ -10,7 +10,9 @@ const { authMiddleware } = require('./auth');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dest = file.fieldname === 'zipFile' ? 'uploads/zips' : 'uploads/previews';
+    let dest = 'uploads/previews';
+    if (file.fieldname === 'zipFile') dest = 'uploads/zips';
+    else if (file.fieldname === 'previewVideo') dest = 'uploads/videos';
     cb(null, path.join(__dirname, '..', dest));
   },
   filename: (req, file, cb) => {
@@ -22,9 +24,15 @@ const upload = multer({
   storage,
   limits: { fileSize: parseInt(process.env.MAX_FILE_SIZE) || 52428800 },
   fileFilter: (req, file, cb) => {
-    if (file.fieldname === 'zipFile' && (file.mimetype === 'application/zip' || file.originalname.endsWith('.zip'))) cb(null, true);
-    else if (file.fieldname === 'previewImage' && file.mimetype.startsWith('image/')) cb(null, true);
-    else cb(new Error('Invalid file type'), false);
+    if (file.fieldname === 'zipFile' && (file.mimetype === 'application/zip' || file.originalname.endsWith('.zip'))) {
+      cb(null, true);
+    } else if (file.fieldname === 'previewImage' && file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else if (file.fieldname === 'previewVideo' && file.mimetype.startsWith('video/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type'), false);
+    }
   }
 });
 
@@ -34,7 +42,7 @@ router.get('/verify', adminAuth, (req, res) => {
 });
 
 // Upload component (with user auth)
-router.post('/upload', authMiddleware, upload.fields([{ name: 'zipFile', maxCount: 1 }, { name: 'previewImage', maxCount: 1 }]), async (req, res) => {
+router.post('/upload', authMiddleware, upload.fields([{ name: 'zipFile', maxCount: 1 }, { name: 'previewImage', maxCount: 1 }, { name: 'previewVideo', maxCount: 1 }]), async (req, res) => {
   try {
     const { name, description, category, tags, version, demoUrl } = req.body;
     if (!req.files?.zipFile?.[0] || !req.files?.previewImage?.[0]) {
@@ -47,6 +55,7 @@ router.post('/upload', authMiddleware, upload.fields([{ name: 'zipFile', maxCoun
       category,
       tags: tags ? tags.split(',').map(t => t.trim().toLowerCase()) : [],
       previewImage: req.files.previewImage[0].filename,
+      previewVideo: req.files.previewVideo?.[0]?.filename,
       zipFile: req.files.zipFile[0].filename,
       demoUrl: demoUrl || '',
       version: version || '1.0.0',
@@ -75,7 +84,7 @@ router.post('/upload', authMiddleware, upload.fields([{ name: 'zipFile', maxCoun
 });
 
 // Update component
-router.put('/components/:id', authMiddleware, upload.fields([{ name: 'zipFile', maxCount: 1 }, { name: 'previewImage', maxCount: 1 }]), async (req, res) => {
+router.put('/components/:id', authMiddleware, upload.fields([{ name: 'zipFile', maxCount: 1 }, { name: 'previewImage', maxCount: 1 }, { name: 'previewVideo', maxCount: 1 }]), async (req, res) => {
   try {
     const component = await Component.findById(req.params.id);
     if (!component) return res.status(404).json({ success: false, message: 'Not found' });
@@ -96,6 +105,12 @@ router.put('/components/:id', authMiddleware, upload.fields([{ name: 'zipFile', 
       fs.unlink(path.join(__dirname, '../uploads/previews', component.previewImage), () => {});
       component.previewImage = req.files.previewImage[0].filename;
     }
+    if (req.files?.previewVideo?.[0]) {
+      if (component.previewVideo) {
+        fs.unlink(path.join(__dirname, '../uploads/videos', component.previewVideo), () => {});
+      }
+      component.previewVideo = req.files.previewVideo[0].filename;
+    }
     
     await component.save();
     res.json({ success: true, data: component });
@@ -112,6 +127,9 @@ router.delete('/components/:id', authMiddleware, async (req, res) => {
     
     fs.unlink(path.join(__dirname, '../uploads/zips', component.zipFile), () => {});
     fs.unlink(path.join(__dirname, '../uploads/previews', component.previewImage), () => {});
+    if (component.previewVideo) {
+      fs.unlink(path.join(__dirname, '../uploads/videos', component.previewVideo), () => {});
+    }
     await Component.findByIdAndDelete(req.params.id);
     
     res.json({ success: true, message: 'Deleted' });

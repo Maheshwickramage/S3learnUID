@@ -216,6 +216,16 @@ function PreviewModal({ component, onClose }) {
                   sandbox="allow-scripts allow-same-origin allow-modals"
                 />
               </div>
+            ) : component.previewVideo ? (
+              <video 
+                controls 
+                poster={component.previewImage ? api.getPreviewUrl(component.previewImage) : undefined}
+                className="w-full h-full object-contain bg-black"
+              >
+                <source src={api.getVideoUrl(component.previewVideo)} type="video/mp4" />
+                <source src={api.getVideoUrl(component.previewVideo)} type="video/webm" />
+                Your browser doesn't support video playback.
+              </video>
             ) : component.previewImage ? (
               <img src={api.getPreviewUrl(component.previewImage)} alt={component.name} className="w-full h-full object-contain" />
             ) : (
@@ -240,10 +250,11 @@ function PreviewModal({ component, onClose }) {
 // Creator Dashboard
 function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
   const [loading, setLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [stats, setStats] = useState(null);
   const [error, setError] = useState('');
   const [form, setForm] = useState({ name: '', category: 'Dashboard', tags: '', description: '', demoUrl: '' });
-  const [files, setFiles] = useState({ zip: null, preview: null });
+  const [files, setFiles] = useState({ zip: null, preview: null, video: null });
   const [activeTab, setActiveTab] = useState('stats'); // stats, upload, profile
 
   useEffect(() => {
@@ -266,6 +277,7 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
       setError('Fill all required fields'); return;
     }
     setLoading(true);
+    setUploadProgress(0);
     setError('');
 
     const formData = new FormData();
@@ -276,12 +288,17 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
     if (form.demoUrl) formData.append('demoUrl', form.demoUrl);
     formData.append('zipFile', files.zip);
     formData.append('previewImage', files.preview);
+    if (files.video) formData.append('previewVideo', files.video);
 
     try {
-      const data = await api.uploadComponent(formData, token);
+      const data = await api.uploadComponent(formData, token, (progress) => {
+        setUploadProgress(progress);
+      });
       if (data.success) {
+        setUploadProgress(100);
         setForm({ name: '', category: 'Dashboard', tags: '', description: '', demoUrl: '' });
-        setFiles({ zip: null, preview: null });
+        setFiles({ zip: null, preview: null, video: null });
+        setTimeout(() => setUploadProgress(0), 1000);
         alert('🎉 Component uploaded successfully!');
         if (onUploadSuccess) onUploadSuccess();
         fetchStats();
@@ -292,6 +309,32 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
       setError('Upload failed. Check your connection.');
     }
     setLoading(false);
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+  };
+
+  const getTotalFileSize = () => {
+    let total = 0;
+    if (files.zip) total += files.zip.size;
+    if (files.preview) total += files.preview.size;
+    if (files.video) total += files.video.size;
+    return total;
+  };
+
+  const getMaxFileSize = () => {
+    return 100; // 100MB in MB
+  };
+
+  const isFileSizeValid = () => {
+    const totalBytes = getTotalFileSize();
+    const maxBytes = getMaxFileSize() * 1024 * 1024;
+    return totalBytes <= maxBytes;
   };
 
   const getNextMilestone = () => {
@@ -468,12 +511,15 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
                 className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-indigo-500 focus:outline-none"
               />
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <label className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition ${files.zip ? 'border-emerald-500 bg-emerald-500/10' : 'border-gray-600 hover:border-indigo-500'}`}>
                   <Upload className={`mx-auto mb-1 ${files.zip ? 'text-emerald-400' : 'text-gray-500'}`} size={24} />
                   <p className={`text-sm truncate ${files.zip ? 'text-emerald-400' : 'text-gray-400'}`}>
                     {files.zip?.name || 'Upload .zip *'}
                   </p>
+                  {files.zip && (
+                    <p className="text-xs text-emerald-300 mt-1">{formatFileSize(files.zip.size)}</p>
+                  )}
                   <input type="file" accept=".zip" className="hidden" onChange={e => setFiles({...files, zip: e.target.files[0]})} />
                 </label>
                 <label className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition ${files.preview ? 'border-emerald-500 bg-emerald-500/10' : 'border-gray-600 hover:border-indigo-500'}`}>
@@ -481,22 +527,93 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
                   <p className={`text-sm truncate ${files.preview ? 'text-emerald-400' : 'text-gray-400'}`}>
                     {files.preview?.name || 'Preview image *'}
                   </p>
+                  {files.preview && (
+                    <p className="text-xs text-emerald-300 mt-1">{formatFileSize(files.preview.size)}</p>
+                  )}
                   <input type="file" accept="image/*" className="hidden" onChange={e => setFiles({...files, preview: e.target.files[0]})} />
+                </label>
+                <label className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition ${files.video ? 'border-indigo-500 bg-indigo-500/10' : 'border-gray-600 hover:border-indigo-500'}`}>
+                  <Upload className={`mx-auto mb-1 ${files.video ? 'text-indigo-400' : 'text-gray-500'}`} size={24} />
+                  <p className={`text-sm truncate ${files.video ? 'text-indigo-400' : 'text-gray-400'}`}>
+                    {files.video?.name || 'Video (optional)'}
+                  </p>
+                  {files.video && (
+                    <p className="text-xs text-indigo-300 mt-1">{formatFileSize(files.video.size)}</p>
+                  )}
+                  <input type="file" accept="video/*" className="hidden" onChange={e => setFiles({...files, video: e.target.files[0]})} />
                 </label>
               </div>
 
+              {/* File Size Info */}
+              {(files.zip || files.preview || files.video) && (
+                <div className={`flex items-center justify-between p-3 rounded-lg border ${
+                  isFileSizeValid() 
+                    ? 'bg-gray-800 border-gray-700' 
+                    : 'bg-red-500/10 border-red-500/30'
+                }`}>
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${isFileSizeValid() ? 'bg-emerald-400' : 'bg-red-400'}`} />
+                    <span className={`text-sm font-medium ${isFileSizeValid() ? 'text-gray-300' : 'text-red-400'}`}>
+                      Total Size: {formatFileSize(getTotalFileSize())}
+                    </span>
+                  </div>
+                  <span className="text-sm text-gray-500">
+                    Max: {getMaxFileSize()} MB
+                  </span>
+                </div>
+              )}
+
+              {/* Upload Progress */}
+              {loading && uploadProgress > 0 && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-indigo-400 font-medium">Uploading...</span>
+                    <span className="text-white font-bold">{uploadProgress}%</span>
+                  </div>
+                  <div className="w-full bg-gray-800 rounded-full h-3 overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-300 ease-out"
+                      style={{ width: `${uploadProgress}%` }}
+                    >
+                      <div className="h-full w-full bg-white/20 animate-pulse" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <button
                 onClick={handleUpload}
-                disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
+                disabled={loading || !isFileSizeValid()}
+                className="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? <><RefreshCw size={18} className="animate-spin" /> Uploading...</> : <><Plus size={18} /> Upload Component</>}
+                {loading ? <><RefreshCw size={18} className="animate-spin" /> Uploading {uploadProgress}%...</> : <><Plus size={18} /> Upload Component</>}
               </button>
+
+              {/* Error Display */}
+              {error && (
+                <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 flex items-start gap-3">
+                  <AlertCircle className="text-red-400 flex-shrink-0 mt-0.5" size={18} />
+                  <p className="text-red-300 text-sm">{error}</p>
+                </div>
+              )}
+
+              {/* File Size Warning */}
+              {!isFileSizeValid() && (files.zip || files.preview || files.video) && (
+                <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 flex items-start gap-3">
+                  <AlertCircle className="text-red-400 flex-shrink-0 mt-0.5" size={18} />
+                  <div>
+                    <p className="text-red-300 text-sm font-semibold">File size exceeds limit!</p>
+                    <p className="text-red-300/80 text-xs mt-1">
+                      Total size is {formatFileSize(getTotalFileSize())}. Maximum allowed is {getMaxFileSize()} MB.
+                    </p>
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-lg p-4">
                   <p className="text-indigo-300 text-sm">
-                    💡 <strong>Tip:</strong> High-quality components with good previews get more downloads and help you reach milestones faster!
+                    💡 <strong>Tip:</strong> High-quality components with good previews and demo videos get more downloads! Videos are optional but highly recommended.
                   </p>
                 </div>
                 <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4">
@@ -777,6 +894,12 @@ export default function App() {
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center">
                         <Layers className="text-white/50" size={48} />
+                      </div>
+                    )}
+                    {comp.previewVideo && (
+                      <div className="absolute top-3 left-3 px-2 py-1 bg-indigo-500 rounded-full flex items-center gap-1">
+                        <Zap className="text-white" size={12} />
+                        <span className="text-xs text-white font-medium">Video</span>
                       </div>
                     )}
                     <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 bg-black/50 backdrop-blur rounded-full">

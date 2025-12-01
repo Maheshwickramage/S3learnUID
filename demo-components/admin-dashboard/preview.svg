@@ -1,0 +1,103 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e293b;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="card1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#14b8a6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="card2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="card3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="card4" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f97316;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Title -->
+  <text x="100" y="80" font-family="Arial, sans-serif" font-size="42" font-weight="bold" fill="#ffffff">
+    Admin Dashboard
+  </text>
+  <text x="100" y="120" font-family="Arial, sans-serif" font-size="18" fill="#94a3b8">
+    Modern React component with stats, charts &amp; activity tracking
+  </text>
+  
+  <!-- Stats Cards -->
+  <rect x="100" y="160" width="240" height="140" rx="16" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+  <rect x="110" y="170" width="48" height="48" rx="12" fill="url(#card1)"/>
+  <text x="170" y="196" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8">Total Revenue</text>
+  <text x="170" y="230" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#ffffff">$45,231</text>
+  <text x="250" y="190" font-family="Arial, sans-serif" font-size="12" fill="#10b981">+20.1%</text>
+  
+  <rect x="360" y="160" width="240" height="140" rx="16" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+  <rect x="370" y="170" width="48" height="48" rx="12" fill="url(#card2)"/>
+  <text x="430" y="196" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8">Active Users</text>
+  <text x="430" y="230" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#ffffff">2,845</text>
+  <text x="520" y="190" font-family="Arial, sans-serif" font-size="12" fill="#10b981">+12.5%</text>
+  
+  <rect x="620" y="160" width="240" height="140" rx="16" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+  <rect x="630" y="170" width="48" height="48" rx="12" fill="url(#card3)"/>
+  <text x="690" y="196" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8">Total Orders</text>
+  <text x="690" y="230" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#ffffff">1,234</text>
+  <text x="780" y="190" font-family="Arial, sans-serif" font-size="12" fill="#ef4444">-5.2%</text>
+  
+  <rect x="880" y="160" width="240" height="140" rx="16" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+  <rect x="890" y="170" width="48" height="48" rx="12" fill="url(#card4)"/>
+  <text x="950" y="196" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8">Growth Rate</text>
+  <text x="950" y="230" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#ffffff">89.2%</text>
+  <text x="1040" y="190" font-family="Arial, sans-serif" font-size="12" fill="#10b981">+8.3%</text>
+  
+  <!-- Chart Area -->
+  <rect x="100" y="330" width="720" height="240" rx="16" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+  <text x="120" y="365" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#ffffff">Revenue Overview</text>
+  
+  <!-- Simple bars -->
+  <rect x="130" y="480" width="40" height="60" rx="4" fill="url(#card2)"/>
+  <rect x="180" y="500" width="40" height="40" rx="4" fill="url(#card2)"/>
+  <rect x="230" y="460" width="40" height="80" rx="4" fill="url(#card2)"/>
+  <rect x="280" y="490" width="40" height="50" rx="4" fill="url(#card2)"/>
+  <rect x="330" y="450" width="40" height="90" rx="4" fill="url(#card2)"/>
+  <rect x="380" y="500" width="40" height="40" rx="4" fill="url(#card2)"/>
+  <rect x="430" y="440" width="40" height="100" rx="4" fill="url(#card2)"/>
+  <rect x="480" y="480" width="40" height="60" rx="4" fill="url(#card2)"/>
+  <rect x="530" y="470" width="40" height="70" rx="4" fill="url(#card2)"/>
+  <rect x="580" y="490" width="40" height="50" rx="4" fill="url(#card2)"/>
+  <rect x="630" y="465" width="40" height="75" rx="4" fill="url(#card2)"/>
+  <rect x="680" y="445" width="40" height="95" rx="4" fill="url(#card2)"/>
+  
+  <!-- Activity Panel -->
+  <rect x="840" y="330" width="280" height="240" rx="16" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+  <text x="860" y="365" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#ffffff">Recent Activity</text>
+  
+  <!-- Activity items -->
+  <rect x="860" y="385" width="240" height="32" rx="8" fill="#334155"/>
+  <circle cx="875" cy="401" r="4" fill="#10b981"/>
+  <text x="890" y="405" font-family="Arial, sans-serif" font-size="12" fill="#ffffff">John Doe</text>
+  
+  <rect x="860" y="425" width="240" height="32" rx="8" fill="#334155"/>
+  <circle cx="875" cy="441" r="4" fill="#3b82f6"/>
+  <text x="890" y="445" font-family="Arial, sans-serif" font-size="12" fill="#ffffff">Sarah Smith</text>
+  
+  <rect x="860" y="465" width="240" height="32" rx="8" fill="#334155"/>
+  <circle cx="875" cy="481" r="4" fill="#f59e0b"/>
+  <text x="890" y="485" font-family="Arial, sans-serif" font-size="12" fill="#ffffff">Mike Johnson</text>
+  
+  <rect x="860" y="505" width="240" height="32" rx="8" fill="#334155"/>
+  <circle cx="875" cy="521" r="4" fill="#10b981"/>
+  <text x="890" y="525" font-family="Arial, sans-serif" font-size="12" fill="#ffffff">Emma Wilson</text>
+  
+  <!-- Footer Badge -->
+  <rect x="480" y="590" width="240" height="30" rx="15" fill="#6366f1"/>
+  <text x="540" y="612" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">✨ Interactive Demo Available</text>
+</svg>

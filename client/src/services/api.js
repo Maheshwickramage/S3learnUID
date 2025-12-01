@@ -60,6 +60,7 @@ export const api = {
     window.open(`${API}/components/download/${id}`, '_blank');
   },
   getPreviewUrl: (img) => `${API.replace('/api', '')}/uploads/previews/${img}`,
+  getVideoUrl: (video) => `${API.replace('/api', '')}/uploads/videos/${video}`,
   
   // Creator actions (requires auth)
   async verifyAdminKey(adminKey) {
@@ -69,13 +70,38 @@ export const api = {
     });
     return res.json();
   },
-  async uploadComponent(formData, token) {
-    const res = await fetch(`${API}/admin/upload`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${token}` },
-      body: formData
+  async uploadComponent(formData, token, onProgress) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      
+      // Track upload progress
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable && onProgress) {
+          const percentComplete = Math.round((e.loaded / e.total) * 100);
+          onProgress(percentComplete);
+        }
+      });
+      
+      xhr.addEventListener('load', () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            resolve(JSON.parse(xhr.responseText));
+          } catch (e) {
+            resolve({ success: false, message: 'Invalid response' });
+          }
+        } else {
+          reject(new Error(`Upload failed with status ${xhr.status}`));
+        }
+      });
+      
+      xhr.addEventListener('error', () => {
+        reject(new Error('Upload failed'));
+      });
+      
+      xhr.open('POST', `${API}/admin/upload`);
+      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      xhr.send(formData);
     });
-    return res.json();
   },
   async deleteComponent(id, token) {
     const res = await fetch(`${API}/admin/components/${id}`, {

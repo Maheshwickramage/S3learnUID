@@ -1,0 +1,28 @@
+{
+  "name": "admin-dashboard-component",
+  "version": "1.0.0",
+  "description": "Beautiful React admin dashboard with stats, charts, and activity tracking",
+  "main": "AdminDashboard.jsx",
+  "keywords": [
+    "react",
+    "dashboard",
+    "admin",
+    "tailwind",
+    "analytics",
+    "charts"
+  ],
+  "author": "S3Learn Community",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "dependencies": {
+    "lucide-react": "^0.263.1"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32"
+  }
+}

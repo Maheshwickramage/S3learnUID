@@ -12,6 +12,7 @@ const componentSchema = new mongoose.Schema({
   },
   tags: [{ type: String, trim: true, lowercase: true }],
   previewImage: { type: String, required: true },
+  previewVideo: { type: String }, // Optional video preview
   zipFile: { type: String, required: true },
   demoUrl: { type: String, trim: true }, // URL to live interactive demo (CodeSandbox, StackBlitz, etc)
   downloads: { type: Number, default: 0 },
@@ -42,6 +43,10 @@ componentSchema.index({ downloads: -1 });
 
 componentSchema.virtual('previewUrl').get(function() {
   return `/uploads/previews/${this.previewImage}`;
+});
+
+componentSchema.virtual('previewVideoUrl').get(function() {
+  return this.previewVideo ? `/uploads/videos/${this.previewVideo}` : null;
 });
 
 componentSchema.virtual('zipUrl').get(function() {
