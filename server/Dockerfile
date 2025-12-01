@@ -10,6 +10,6 @@ COPY . .
 
 RUN mkdir -p uploads/zips uploads/previews uploads/videos
 
-EXPOSE 3000
+EXPOSE 5001
 
 CMD ["npm", "start"]
