@@ -16,6 +16,8 @@ services:
       - MAX_FILE_SIZE=104857600
     volumes:
       - ./server/uploads:/app/uploads
+    networks:
+      - s3learn-network
 
   client:
     build:
@@ -27,3 +29,9 @@ services:
       - "80:80"
     depends_on:
       - server
+    networks:
+      - s3learn-network
+
+networks:
+  s3learn-network:
+    driver: bridge
