@@ -12,7 +12,7 @@ services:
       - MONGODB_URI=mongodb+srv://new_user1998:Darsh1998@cluster0.8rfeoyy.mongodb.net/s3learnUID?retryWrites=true&w=majority
       - JWT_SECRET=${JWT_SECRET:-your-secret-key-change-in-production}
       - MAX_FILE_SIZE=104857600
-      - USE_S3=true
+      - USE_S3=${USE_S3:-false}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_REGION=${AWS_REGION:-us-east-1}

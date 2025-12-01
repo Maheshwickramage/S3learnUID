@@ -219,15 +219,15 @@ function PreviewModal({ component, onClose }) {
             ) : component.previewVideo ? (
               <video 
                 controls 
-                poster={component.previewImage ? api.getPreviewUrl(component.previewImage) : undefined}
+                poster={component.previewUrl}
                 className="w-full h-full object-contain bg-black"
               >
-                <source src={api.getVideoUrl(component.previewVideo)} type="video/mp4" />
-                <source src={api.getVideoUrl(component.previewVideo)} type="video/webm" />
+                <source src={component.previewVideoUrl} type="video/mp4" />
+                <source src={component.previewVideoUrl} type="video/webm" />
                 Your browser doesn't support video playback.
               </video>
             ) : component.previewImage ? (
-              <img src={api.getPreviewUrl(component.previewImage)} alt={component.name} className="w-full h-full object-contain" />
+              <img src={component.previewUrl} alt={component.name} className="w-full h-full object-contain" />
             ) : (
               <div className="flex items-center justify-center h-full text-center p-8">
                 <div>
@@ -890,7 +890,7 @@ export default function App() {
                   <div className={`relative overflow-hidden ${viewMode === 'list' ? 'w-48 flex-shrink-0' : 'aspect-video'}`}>
                     <div className={`absolute inset-0 bg-gradient-to-br ${gradients[idx % gradients.length]} opacity-30`} />
                     {comp.previewImage ? (
-                      <img src={api.getPreviewUrl(comp.previewImage)} alt={comp.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <img src={comp.previewUrl} alt={comp.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center">
                         <Layers className="text-white/50" size={48} />

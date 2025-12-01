@@ -43,33 +43,24 @@ componentSchema.index({ downloads: -1 });
 
 componentSchema.virtual('previewUrl').get(function() {
   if (process.env.USE_S3 === 'true') {
-    // S3 URLs - previewImage already contains the folder path (e.g., "previews/123.png")
     return `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/${this.previewImage}`;
   }
-  // Local URLs - add folder prefix if not already present
-  const imagePath = this.previewImage.startsWith('previews/') ? this.previewImage : `previews/${this.previewImage}`;
-  return `/uploads/${imagePath}`;
+  return `/uploads/previews/${this.previewImage}`;
 });
 
 componentSchema.virtual('previewVideoUrl').get(function() {
   if (!this.previewVideo) return null;
   if (process.env.USE_S3 === 'true') {
-    // S3 URLs - previewVideo already contains the folder path (e.g., "videos/123.mp4")
     return `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/${this.previewVideo}`;
   }
-  // Local URLs - add folder prefix if not already present
-  const videoPath = this.previewVideo.startsWith('videos/') ? this.previewVideo : `videos/${this.previewVideo}`;
-  return `/uploads/${videoPath}`;
+  return `/uploads/videos/${this.previewVideo}`;
 });
 
 componentSchema.virtual('zipUrl').get(function() {
   if (process.env.USE_S3 === 'true') {
-    // S3 URLs - zipFile already contains the folder path (e.g., "zips/123.zip")
     return `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/${this.zipFile}`;
   }
-  // Local URLs - add folder prefix if not already present
-  const zipPath = this.zipFile.startsWith('zips/') ? this.zipFile : `zips/${this.zipFile}`;
-  return `/uploads/${zipPath}`;
+  return `/uploads/zips/${this.zipFile}`;
 });
 
 componentSchema.set('toJSON', { virtuals: true });
