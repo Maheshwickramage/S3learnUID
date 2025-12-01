@@ -56,11 +56,6 @@ export const api = {
     const res = await fetch(`${API}/components/meta/stats`);
     return res.json();
   },
-  downloadComponent(id) {
-    window.open(`${API}/components/download/${id}`, '_blank');
-  },
-  getPreviewUrl: (img) => `${API.replace('/api', '')}/uploads/previews/${img}`,
-  getVideoUrl: (video) => `${API.replace('/api', '')}/uploads/videos/${video}`,
   
   // Creator actions (requires auth)
   async verifyAdminKey(adminKey) {

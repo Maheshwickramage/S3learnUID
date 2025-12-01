@@ -191,7 +191,7 @@ function PreviewModal({ component, onClose }) {
                 </button>
               </div>
             )}
-            <button onClick={() => api.downloadComponent(component._id)} className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg text-white font-medium flex items-center gap-2 hover:opacity-90 transition">
+            <button onClick={() => window.open(component.zipUrl, '_blank')} className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg text-white font-medium flex items-center gap-2 hover:opacity-90 transition">
               <Download size={18} /> Download
             </button>
             <button onClick={onClose} className="p-2 hover:bg-gray-700 rounded-lg transition">
