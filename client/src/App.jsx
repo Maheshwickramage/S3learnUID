@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Eye, Download, Search, Grid, List, Star, Code, Layers, Zap, X, Upload, Plus, Trash2, Lock, LogOut, RefreshCw, AlertCircle, User, Award, TrendingUp, Gift, Crown, Sparkles, LogIn, UserPlus } from 'lucide-react';
 import { api } from './services/api';
+import RewardPopup from './components/RewardPopup';
 
 const categories = ['All', 'Dashboard', 'Cards', 'Forms', 'Tables', 'Landing', 'Navigation'];
 const gradients = ['from-indigo-500 to-purple-600', 'from-pink-500 to-rose-600', 'from-emerald-500 to-teal-600', 'from-amber-500 to-orange-600', 'from-blue-500 to-cyan-600', 'from-violet-500 to-purple-600'];
@@ -256,10 +257,26 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
   const [form, setForm] = useState({ name: '', category: 'Dashboard', tags: '', description: '', demoUrl: '' });
   const [files, setFiles] = useState({ zip: null, preview: null, video: null });
   const [activeTab, setActiveTab] = useState('stats'); // stats, upload, profile
+  const [newReward, setNewReward] = useState(null);
+  const [showRewardPopup, setShowRewardPopup] = useState(false);
 
   useEffect(() => {
     fetchStats();
+    checkForNewRewards();
   }, []);
+
+  const checkForNewRewards = async () => {
+    try {
+      const data = await api.checkMilestones(token);
+      if (data.success && data.newRewards && data.newRewards.length > 0) {
+        // Show popup for the first new reward
+        setNewReward(data.newRewards[0]);
+        setShowRewardPopup(true);
+      }
+    } catch (error) {
+      console.error('Check rewards error:', error);
+    }
+  };
 
   const fetchStats = async () => {
     try {
@@ -697,6 +714,31 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
           )}
         </div>
       </div>
+      {showRewardPopup && newReward && (
+        <RewardPopup
+          reward={newReward}
+          onClose={() => {
+            setShowRewardPopup(false);
+            setNewReward(null);
+          }}
+          onSubmit={async (addressData) => {
+            try {
+              const result = await api.submitShippingAddress(newReward._id, addressData, token);
+              if (result.success) {
+                alert('🎉 Shipping information submitted successfully! We will process your reward soon.');
+                setShowRewardPopup(false);
+                setNewReward(null);
+                fetchStats(); // Refresh stats to show claimed rewards
+              } else {
+                alert(result.message || 'Failed to submit shipping information');
+              }
+            } catch (error) {
+              console.error('Submit shipping error:', error);
+              alert('An error occurred while submitting your information');
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

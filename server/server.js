@@ -19,6 +19,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', require('./routes/auth').router);
 app.use('/api/components', require('./routes/components'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/rewards', require('./routes/rewards'));
 
 app.get('/api/health', (req, res) => {
   res.json({ success: true, message: 'S3Learn API running', timestamp: new Date() });

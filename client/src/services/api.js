@@ -150,5 +150,30 @@ export const api = {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     return res.json();
+  },
+
+  // Rewards
+  async checkMilestones(token) {
+    const res = await fetch(`${API}/rewards/check-milestones`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return res.json();
+  },
+  async getMyRewards(token) {
+    const res = await fetch(`${API}/rewards/my-rewards`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return res.json();
+  },
+  async submitShippingAddress(rewardId, addressData, token) {
+    const res = await fetch(`${API}/rewards/submit-address/${rewardId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(addressData)
+    });
+    return res.json();
   }
 };
