@@ -57,6 +57,52 @@ export const api = {
     return res.json();
   },
   
+  // Track and download component
+  async trackDownload(componentId, token) {
+    // Generate a simple browser fingerprint
+    const fingerprint = await this.generateFingerprint();
+    
+    const res = await fetch(`${API}/components/track-download/${componentId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` })
+      },
+      body: JSON.stringify({ fingerprint })
+    });
+    return res.json();
+  },
+  
+  // Generate browser fingerprint for anonymous user tracking
+  async generateFingerprint() {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.textBaseline = 'top';
+    ctx.font = '14px Arial';
+    ctx.fillText('fingerprint', 2, 2);
+    const canvasData = canvas.toDataURL();
+    
+    const fingerprint = {
+      canvas: canvasData.slice(0, 100),
+      screen: `${screen.width}x${screen.height}x${screen.colorDepth}`,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      language: navigator.language,
+      platform: navigator.platform,
+      hardwareConcurrency: navigator.hardwareConcurrency,
+      deviceMemory: navigator.deviceMemory || 'unknown'
+    };
+    
+    // Create a simple hash
+    const str = JSON.stringify(fingerprint);
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    return hash.toString(36);
+  },
+  
   // Creator actions (requires auth)
   async verifyAdminKey(adminKey) {
     const res = await fetch(`${API}/admin/verify`, {

@@ -191,7 +191,7 @@ function PreviewModal({ component, onClose }) {
                 </button>
               </div>
             )}
-            <button onClick={() => window.open(component.zipUrl, '_blank')} className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg text-white font-medium flex items-center gap-2 hover:opacity-90 transition">
+            <button onClick={() => handleDownload(component)} className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg text-white font-medium flex items-center gap-2 hover:opacity-90 transition">
               <Download size={18} /> Download
             </button>
             <button onClick={onClose} className="p-2 hover:bg-gray-700 rounded-lg transition">
@@ -749,6 +749,30 @@ export default function App() {
     setShowDashboard(false);
   };
 
+  const handleDownload = async (component) => {
+    try {
+      // Track the download first
+      const result = await api.trackDownload(component._id, token);
+      
+      if (result.success) {
+        if (result.alreadyDownloaded) {
+          alert('You have already downloaded this component. Opening download link...');
+        }
+        
+        // Open the S3 URL
+        window.open(component.zipUrl, '_blank');
+        
+        // Refresh data to show updated download count
+        fetchData();
+      } else {
+        alert('Failed to track download: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+      alert('Download failed. Please try again.');
+    }
+  };
+
   const handleAuthSuccess = (userData, userToken) => {
     setUser(userData);
     setToken(userToken);
@@ -930,7 +954,7 @@ export default function App() {
                       <button onClick={() => setPreview(comp)} className="flex-1 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition">
                         <Eye size={16} /> Preview
                       </button>
-                      <button onClick={() => window.open(comp.zipUrl, '_blank')} className="flex-1 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg text-sm font-medium flex items-center justify-center gap-2 hover:opacity-90 transition">
+                      <button onClick={() => handleDownload(comp)} className="flex-1 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg text-sm font-medium flex items-center justify-center gap-2 hover:opacity-90 transition">
                         <Download size={16} /> Download
                       </button>
                     </div>
