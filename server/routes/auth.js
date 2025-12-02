@@ -159,6 +159,7 @@ router.put('/profile', authMiddleware, async (req, res) => {
 router.get('/stats', authMiddleware, async (req, res) => {
   try {
     const Component = require('../models/Component');
+    const Reward = require('../models/Reward');
     
     // Get user's components
     const components = await Component.find({ creator: req.user._id });
@@ -176,6 +177,9 @@ router.get('/stats', authMiddleware, async (req, res) => {
     await req.user.checkMilestones();
     await req.user.save();
     
+    // Get claimed rewards
+    const claimedRewards = await Reward.find({ user: req.user._id, claimed: true });
+    
     res.json({
       success: true,
       stats: {
@@ -187,6 +191,7 @@ router.get('/stats', authMiddleware, async (req, res) => {
         points: req.user.points,
         badges: req.user.badges,
         rewards: req.user.rewards,
+        claimedRewards: claimedRewards,
         recentComponents: components.slice(0, 5)
       }
     });

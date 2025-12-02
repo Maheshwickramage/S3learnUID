@@ -99,12 +99,12 @@ export default function RewardPopup({ reward, onClose, onSubmit }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-gray-700 shadow-2xl">
+    <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border-2 border-blue-200 shadow-2xl">
         {!showForm ? (
           // Congratulations Screen
-          <div className="p-8 text-center">
-            <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white transition">
+          <div className="p-8 text-center bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+            <button onClick={onClose} className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 transition">
               <X size={24} />
             </button>
             
@@ -112,37 +112,37 @@ export default function RewardPopup({ reward, onClose, onSubmit }) {
               {getRewardIcon(reward.type)}
             </div>
             
-            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 bg-clip-text text-transparent">
+            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-yellow-500 via-orange-500 to-pink-500 bg-clip-text text-transparent">
               🎉 Congratulations! 🎉
             </h2>
             
-            <h3 className="text-2xl font-bold text-white mb-3">
+            <h3 className="text-2xl font-bold text-gray-800 mb-3">
               {reward.title}
             </h3>
             
-            <div className="bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl p-6 mb-6 border border-indigo-500/30">
-              <p className="text-xl text-gray-200 mb-2">
+            <div className="bg-gradient-to-r from-blue-100 to-indigo-100 rounded-xl p-6 mb-6 border-2 border-blue-200">
+              <p className="text-xl text-gray-800 mb-2 font-semibold">
                 {getRewardDescription(reward.type, reward.milestone)}
               </p>
-              <p className="text-gray-400">
-                You've reached <span className="text-yellow-400 font-bold">{reward.milestone}</span> total downloads!
+              <p className="text-gray-700">
+                You've reached <span className="text-orange-600 font-bold">{reward.milestone}</span> total downloads!
               </p>
             </div>
 
             {needsShipping(reward.type) ? (
               <div className="space-y-4">
-                <p className="text-gray-300">
+                <p className="text-gray-700 text-lg">
                   To receive your reward, please provide your shipping details.
                 </p>
                 <button
                   onClick={() => setShowForm(true)}
-                  className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg text-white font-bold text-lg hover:opacity-90 transition transform hover:scale-105"
+                  className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg text-white font-bold text-lg shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 transition transform hover:scale-105"
                 >
                   Claim Your Reward
                 </button>
                 <button
                   onClick={onClose}
-                  className="block w-full text-gray-400 hover:text-white transition"
+                  className="block w-full text-gray-600 hover:text-gray-800 transition font-medium"
                 >
                   I'll claim it later
                 </button>
@@ -150,7 +150,7 @@ export default function RewardPopup({ reward, onClose, onSubmit }) {
             ) : (
               <button
                 onClick={onClose}
-                className="px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg text-white font-bold text-lg hover:opacity-90 transition"
+                className="px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg text-white font-bold text-lg shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition"
               >
                 Awesome!
               </button>

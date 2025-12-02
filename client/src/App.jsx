@@ -55,21 +55,21 @@ function AuthModal({ onClose, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-gray-900 rounded-2xl max-w-md w-full border border-gray-700" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-5 border-b border-gray-700">
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            {isLogin ? <LogIn size={20} /> : <UserPlus size={20} />}
+    <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl max-w-md w-full border-2 border-blue-100 shadow-2xl" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-5 border-b-2 border-blue-100 bg-gradient-to-r from-blue-50 to-indigo-50">
+          <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+            {isLogin ? <LogIn size={20} className="text-blue-600" /> : <UserPlus size={20} className="text-blue-600" />}
             {isLogin ? 'Login to S3Learn' : 'Join S3Learn'}
           </h2>
-          <button onClick={onClose} className="p-2 hover:bg-gray-700 rounded-lg">
-            <X className="text-gray-400" size={24} />
+          <button onClick={onClose} className="p-2 hover:bg-blue-100 rounded-lg transition">
+            <X className="text-gray-600" size={24} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           {error && (
-            <div className="p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-400 flex items-center gap-2">
+            <div className="p-3 bg-red-50 border-2 border-red-200 rounded-lg text-red-700 flex items-center gap-2 font-medium">
               <AlertCircle size={18} />{error}
             </div>
           )}
@@ -81,7 +81,7 @@ function AuthModal({ onClose, onSuccess }) {
                 placeholder="Username"
                 value={form.username}
                 onChange={e => setForm({...form, username: e.target.value})}
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-indigo-500 focus:outline-none"
+                className="w-full px-4 py-3 bg-gray-50 border-2 border-blue-100 rounded-lg text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 placeholder-gray-400"
                 required
               />
               <input
@@ -89,7 +89,7 @@ function AuthModal({ onClose, onSuccess }) {
                 placeholder="Display Name (optional)"
                 value={form.displayName}
                 onChange={e => setForm({...form, displayName: e.target.value})}
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-indigo-500 focus:outline-none"
+                className="w-full px-4 py-3 bg-gray-50 border-2 border-blue-100 rounded-lg text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 placeholder-gray-400"
               />
             </>
           )}
@@ -99,7 +99,7 @@ function AuthModal({ onClose, onSuccess }) {
             placeholder="Email"
             value={form.email}
             onChange={e => setForm({...form, email: e.target.value})}
-            className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-indigo-500 focus:outline-none"
+            className="w-full px-4 py-3 bg-gray-50 border-2 border-blue-100 rounded-lg text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 placeholder-gray-400"
             required
           />
 
@@ -108,19 +108,19 @@ function AuthModal({ onClose, onSuccess }) {
             placeholder="Password"
             value={form.password}
             onChange={e => setForm({...form, password: e.target.value})}
-            className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-indigo-500 focus:outline-none"
+            className="w-full px-4 py-3 bg-gray-50 border-2 border-blue-100 rounded-lg text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 placeholder-gray-400"
             required
           />
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition"
           >
             {loading ? <><RefreshCw size={18} className="animate-spin" /> Processing...</> : (isLogin ? 'Login' : 'Create Account')}
           </button>
 
-          <p className="text-center text-gray-400 text-sm">
+          <p className="text-center text-gray-600 text-sm">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button
               type="button"
@@ -128,7 +128,7 @@ function AuthModal({ onClose, onSuccess }) {
                 setIsLogin(!isLogin);
                 setError('');
               }}
-              className="text-indigo-400 hover:text-indigo-300"
+              className="text-blue-600 hover:text-blue-700 font-semibold"
             >
               {isLogin ? 'Sign up' : 'Login'}
             </button>
@@ -368,31 +368,31 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-gray-900 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-auto border border-gray-700" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-auto border-2 border-blue-200 shadow-2xl" onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-gray-700">
+        <div className="flex items-center justify-between p-5 border-b-2 border-blue-100 bg-gradient-to-r from-blue-50 to-indigo-50">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/30">
               {user.displayName?.[0] || user.username[0]}
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">{user.displayName || user.username}</h2>
-              <p className="text-sm text-gray-400">Level {user.level} Creator</p>
+              <h2 className="text-xl font-bold text-gray-800">{user.displayName || user.username}</h2>
+              <p className="text-sm text-gray-600 font-medium">Level {user.level} Creator</p>
             </div>
           </div>
           <div className="flex gap-2">
-            <button onClick={onLogout} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm flex items-center gap-2">
+            <button onClick={onLogout} className="px-4 py-2 bg-red-50 hover:bg-red-100 rounded-lg text-sm flex items-center gap-2 text-red-600 font-medium border border-red-200 transition">
               <LogOut size={16} /> Logout
             </button>
-            <button onClick={onClose} className="p-2 hover:bg-gray-700 rounded-lg">
-              <X className="text-gray-400" size={24} />
+            <button onClick={onClose} className="p-2 hover:bg-blue-100 rounded-lg transition">
+              <X className="text-gray-600" size={24} />
             </button>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-700">
+        <div className="flex border-b-2 border-blue-100 bg-gray-50">
           {[
             { id: 'stats', label: 'Dashboard', icon: TrendingUp },
             { id: 'upload', label: 'Upload', icon: Upload },
@@ -403,10 +403,10 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 py-3 px-4 flex items-center justify-center gap-2 ${
+                className={`flex-1 py-3 px-4 flex items-center justify-center gap-2 font-medium transition ${
                   activeTab === tab.id
-                    ? 'border-b-2 border-indigo-500 text-white'
-                    : 'text-gray-400 hover:text-white'
+                    ? 'border-b-2 border-blue-500 text-blue-600 bg-white'
+                    : 'text-gray-600 hover:text-blue-600 hover:bg-white/50'
                 }`}
               >
                 <Icon size={18} />
@@ -416,9 +416,9 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
           })}
         </div>
 
-        <div className="p-5">
+        <div className="p-5 bg-gradient-to-br from-gray-50 to-blue-50/30">
           {error && (
-            <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-400 flex items-center gap-2">
+            <div className="mb-4 p-3 bg-red-50 border-2 border-red-200 rounded-lg text-red-700 flex items-center gap-2 font-medium">
               <AlertCircle size={18} />{error}
             </div>
           )}
@@ -436,47 +436,47 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
                 ].map((stat, i) => {
                   const Icon = stat.icon;
                   return (
-                    <div key={i} className="bg-gray-800 rounded-xl p-4 border border-gray-700">
-                      <div className={`w-10 h-10 bg-gradient-to-r ${stat.color} rounded-lg flex items-center justify-center mb-2`}>
+                    <div key={i} className="bg-white rounded-xl p-4 border-2 border-blue-100 shadow-sm hover:shadow-md transition">
+                      <div className={`w-10 h-10 bg-gradient-to-r ${stat.color} rounded-lg flex items-center justify-center mb-2 shadow-lg`}>
                         <Icon className="text-white" size={20} />
                       </div>
-                      <p className="text-2xl font-bold text-white">{stat.value}</p>
-                      <p className="text-sm text-gray-400">{stat.label}</p>
+                      <p className="text-2xl font-bold text-gray-800">{stat.value}</p>
+                      <p className="text-sm text-gray-600 font-medium">{stat.label}</p>
                     </div>
                   );
                 })}
               </div>
 
               {/* Milestone Progress */}
-              <div className="bg-gray-800 rounded-xl p-5 border border-gray-700">
+              <div className="bg-white rounded-xl p-5 border-2 border-blue-100 shadow-sm">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                    <TrendingUp size={20} /> Next Milestone
+                  <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                    <TrendingUp size={20} className="text-blue-600" /> Next Milestone
                   </h3>
-                  <span className="text-indigo-400 font-semibold">{stats.totalDownloads} / {getNextMilestone()}</span>
+                  <span className="text-blue-600 font-semibold">{stats.totalDownloads} / {getNextMilestone()}</span>
                 </div>
-                <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-500"
+                    className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 transition-all duration-500 shadow-sm"
                     style={{ width: `${Math.min(getMilestoneProgress(), 100)}%` }}
                   />
                 </div>
-                <p className="text-sm text-gray-400 mt-2">
+                <p className="text-sm text-gray-600 mt-2 font-medium">
                   {getNextMilestone() - stats.totalDownloads} more downloads to unlock rewards!
                 </p>
               </div>
 
               {/* Badges */}
               {stats.badges && stats.badges.length > 0 && (
-                <div className="bg-gray-800 rounded-xl p-5 border border-gray-700">
-                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                    <Award size={20} /> Your Badges
+                <div className="bg-white rounded-xl p-5 border-2 border-blue-100 shadow-sm">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                    <Award size={20} className="text-yellow-600" /> Your Badges
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {stats.badges.map((badge, i) => (
-                      <div key={i} className="px-4 py-2 bg-gray-700 rounded-lg border border-gray-600 flex items-center gap-2">
+                      <div key={i} className="px-4 py-2 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border-2 border-yellow-200 flex items-center gap-2 shadow-sm">
                         <span className="text-2xl">{badgeIcons[badge.type] || '🏅'}</span>
-                        <span className="text-white capitalize">{badge.type.replace('_', ' ')}</span>
+                        <span className="text-gray-800 capitalize font-medium">{badge.type.replace('_', ' ')}</span>
                       </div>
                     ))}
                   </div>
@@ -493,13 +493,13 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
                 placeholder="Component Name *"
                 value={form.name}
                 onChange={e => setForm({...form, name: e.target.value})}
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-indigo-500 focus:outline-none"
+                className="w-full px-4 py-3 bg-gray-50 border-2 border-blue-100 rounded-lg text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 placeholder-gray-400"
               />
 
               <select
                 value={form.category}
                 onChange={e => setForm({...form, category: e.target.value})}
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-indigo-500 focus:outline-none"
+                className="w-full px-4 py-3 bg-gray-50 border-2 border-blue-100 rounded-lg text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100"
               >
                 {categories.filter(c => c !== 'All').map(cat => <option key={cat} value={cat}>{cat}</option>)}
               </select>
@@ -509,7 +509,7 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
                 placeholder="Tags (comma separated)"
                 value={form.tags}
                 onChange={e => setForm({...form, tags: e.target.value})}
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-indigo-500 focus:outline-none"
+                className="w-full px-4 py-3 bg-gray-50 border-2 border-blue-100 rounded-lg text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 placeholder-gray-400"
               />
 
               <textarea
@@ -517,7 +517,7 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
                 value={form.description}
                 onChange={e => setForm({...form, description: e.target.value})}
                 rows={3}
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-indigo-500 focus:outline-none resize-none"
+                className="w-full px-4 py-3 bg-gray-50 border-2 border-blue-100 rounded-lg text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 resize-none placeholder-gray-400"
               />
 
               <input
@@ -525,7 +525,7 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
                 placeholder="Demo URL (optional) - CodeSandbox, StackBlitz, or live demo"
                 value={form.demoUrl || ''}
                 onChange={e => setForm({...form, demoUrl: e.target.value})}
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-indigo-500 focus:outline-none"
+                className="w-full px-4 py-3 bg-gray-50 border-2 border-blue-100 rounded-lg text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 placeholder-gray-400"
               />
 
               <div className="grid grid-cols-3 gap-3">
@@ -646,67 +646,141 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
           {/* Rewards Tab */}
           {activeTab === 'rewards' && stats && (
             <div className="space-y-4">
-              <div className="bg-gradient-to-r from-indigo-500/20 to-purple-600/20 border border-indigo-500/30 rounded-xl p-5">
-                <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
-                  <Gift size={24} /> Reward System
+              <div className="bg-gradient-to-r from-blue-100 to-indigo-100 border-2 border-blue-200 rounded-xl p-5 shadow-sm">
+                <h3 className="text-xl font-bold text-gray-800 mb-2 flex items-center gap-2">
+                  <Gift size={24} className="text-blue-600" /> Reward System
                 </h3>
-                <p className="text-gray-300">Earn rewards as your components reach download milestones!</p>
+                <p className="text-gray-700 font-medium">Earn rewards as your components reach download milestones!</p>
               </div>
 
               {/* Milestones */}
               <div className="space-y-3">
                 {[
-                  { milestone: 100, title: 'Rising Star 🌟', desc: 'Special badge & recognition', reached: stats.totalDownloads >= 100 },
-                  { milestone: 500, title: 'Featured Creator ⭐', desc: 'Your components get featured', reached: stats.totalDownloads >= 500 },
-                  { milestone: 1000, title: 'Master Creator 🏆', desc: 'Digital certificate of excellence', reached: stats.totalDownloads >= 1000 },
-                  { milestone: 5000, title: 'Legend Status 👑', desc: 'Exclusive gift package', reached: stats.totalDownloads >= 5000 }
+                  { milestone: 100, title: 'Rising Star 🌟', type: 'Badge', desc: 'Special badge & profile recognition', icon: '🏅', reached: stats.totalDownloads >= 100 },
+                  { milestone: 500, title: 'Featured Creator ⭐', type: 'Premium T-Shirt', desc: 'Exclusive S3Learn branded t-shirt', icon: '👕', reached: stats.totalDownloads >= 500 },
+                  { milestone: 1000, title: 'Master Creator 🏆', type: 'Certificate', desc: 'Digital certificate of excellence', icon: '📜', reached: stats.totalDownloads >= 1000 },
+                  { milestone: 5000, title: 'Legend Status 👑', type: 'Gift Package', desc: 'Exclusive merchandise gift package', icon: '🎁', reached: stats.totalDownloads >= 5000 }
                 ].map((reward, i) => (
                   <div
                     key={i}
-                    className={`p-4 rounded-xl border ${
+                    className={`p-4 rounded-xl border-2 transition-all ${
                       reward.reached
-                        ? 'bg-emerald-500/10 border-emerald-500/50'
-                        : 'bg-gray-800 border-gray-700'
+                        ? 'bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-400 shadow-lg shadow-emerald-500/20'
+                        : 'bg-white border-blue-100 hover:border-blue-200 shadow-sm'
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className={`font-semibold ${reward.reached ? 'text-emerald-400' : 'text-white'}`}>
-                          {reward.title}
-                        </h4>
-                        <p className="text-sm text-gray-400">{reward.desc}</p>
-                        <p className="text-xs text-gray-500 mt-1">{reward.milestone} downloads</p>
+                    <div className="flex items-start gap-4">
+                      <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-3xl flex-shrink-0 shadow-md ${
+                        reward.reached ? 'bg-gradient-to-br from-yellow-400 to-orange-500' : 'bg-gray-100'
+                      }`}>
+                        {reward.reached ? reward.icon : <Lock className="text-gray-400" size={24} />}
                       </div>
-                      {reward.reached ? (
-                        <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xl">✓</span>
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <h4 className={`font-bold text-lg ${reward.reached ? 'text-emerald-600' : 'text-gray-800'}`}>
+                              {reward.title}
+                            </h4>
+                            <p className={`text-sm font-medium ${reward.reached ? 'text-emerald-600' : 'text-blue-600'}`}>
+                              🎁 Reward: {reward.type}
+                            </p>
+                            <p className="text-sm text-gray-600 mt-1">{reward.desc}</p>
+                          </div>
+                          {reward.reached && (
+                            <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
+                              <span className="text-white text-xl">✓</span>
+                            </div>
+                          )}
                         </div>
-                      ) : (
-                        <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
-                          <Lock className="text-gray-500" size={20} />
+                        <div className="mt-3 flex items-center gap-2">
+                          <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div 
+                              className={`h-full transition-all ${
+                                reward.reached ? 'bg-gradient-to-r from-emerald-400 to-teal-500' : 'bg-blue-300'
+                              }`}
+                              style={{ width: reward.reached ? '100%' : `${Math.min((stats.totalDownloads / reward.milestone) * 100, 100)}%` }}
+                            />
+                          </div>
+                          <span className="text-xs text-gray-600 font-medium whitespace-nowrap">
+                            {stats.totalDownloads}/{reward.milestone}
+                          </span>
                         </div>
-                      )}
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
 
-              {/* Claimed Rewards */}
-              {stats.rewards && stats.rewards.length > 0 && (
-                <div className="bg-gray-800 rounded-xl p-5 border border-gray-700">
-                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                    <Crown size={20} className="text-yellow-400" /> Claimed Rewards
+              {/* Claimed Rewards Section */}
+              {stats.claimedRewards && stats.claimedRewards.length > 0 && (
+                <div className="bg-white rounded-xl p-6 border-2 border-yellow-300 shadow-lg">
+                  <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <Crown size={24} className="text-yellow-600" /> Your Claimed Rewards
                   </h3>
-                  <div className="space-y-2">
-                    {stats.rewards.map((reward, i) => (
-                      <div key={i} className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
-                        <div>
-                          <p className="text-white font-medium">{reward.title}</p>
-                          <p className="text-sm text-gray-400">{reward.description}</p>
+                  <div className="space-y-3">
+                    {stats.claimedRewards.map((reward) => (
+                      <div 
+                        key={reward._id} 
+                        className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border-2 border-blue-100 hover:border-blue-300 transition shadow-sm"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start gap-3">
+                            <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
+                              {reward.type === 't-shirt' && <span className="text-2xl">👕</span>}
+                              {reward.type === 'cap' && <span className="text-2xl">🧢</span>}
+                              {reward.type === 'certificate' && <span className="text-2xl">📜</span>}
+                              {reward.type === 'gift-package' && <span className="text-2xl">🎁</span>}
+                              {reward.type === 'badge' && <span className="text-2xl">🏅</span>}
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="text-gray-800 font-semibold text-lg">{reward.title}</h4>
+                              <p className="text-gray-600 text-sm mt-1 font-medium">
+                                {reward.milestone} downloads milestone
+                              </p>
+                              {reward.shippingInfo && (
+                                <div className="mt-2 text-xs text-gray-600">
+                                  <p>📦 Shipping to: {reward.shippingInfo.city}, {reward.shippingInfo.country}</p>
+                                  {reward.shippingInfo.size && (
+                                    <p>📏 Size: {reward.shippingInfo.size}</p>
+                                  )}
+                                </div>
+                              )}
+                              {reward.trackingNumber && (
+                                <p className="mt-2 text-xs text-blue-600 font-medium">
+                                  🚚 Tracking: {reward.trackingNumber}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-end gap-2">
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium shadow-sm ${
+                              reward.status === 'delivered' ? 'bg-emerald-100 text-emerald-700 border border-emerald-300' :
+                              reward.status === 'shipped' ? 'bg-blue-100 text-blue-700 border border-blue-300' :
+                              reward.status === 'processing' ? 'bg-yellow-100 text-yellow-700 border border-yellow-300' :
+                              reward.status === 'address-submitted' ? 'bg-purple-100 text-purple-700 border border-purple-300' :
+                              'bg-gray-100 text-gray-700 border border-gray-300'
+                            }`}>
+                              {reward.status === 'delivered' && '✓ Delivered'}
+                              {reward.status === 'shipped' && '🚚 Shipped'}
+                              {reward.status === 'processing' && '⏳ Processing'}
+                              {reward.status === 'address-submitted' && '📝 Submitted'}
+                              {reward.status === 'pending' && '⏸️ Pending'}
+                            </span>
+                            {reward.deliveredAt && (
+                              <span className="text-xs text-gray-600 font-medium">
+                                {new Date(reward.deliveredAt).toLocaleDateString()}
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        <span className="text-emerald-400 text-sm">✓ Unlocked</span>
                       </div>
                     ))}
+                  </div>
+                  <div className="mt-4 p-3 bg-blue-50 rounded-lg border-2 border-blue-200">
+                    <p className="text-sm text-blue-700 flex items-center gap-2 font-medium">
+                      <Gift size={16} />
+                      Keep uploading quality components to unlock more rewards!
+                    </p>
                   </div>
                 </div>
               )}
@@ -821,31 +895,31 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-50 to-indigo-50 text-gray-800">
       {/* Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute top-1/2 -left-40 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}} />
-        <div className="absolute -bottom-40 right-1/3 w-80 h-80 bg-pink-500/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}} />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200/40 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-1/2 -left-40 w-80 h-80 bg-sky-200/40 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}} />
+        <div className="absolute -bottom-40 right-1/3 w-80 h-80 bg-indigo-200/40 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}} />
       </div>
 
       {/* Header */}
-      <header className="relative border-b border-gray-800 bg-gray-900/80 backdrop-blur-xl sticky top-0 z-40">
+      <header className="relative border-b border-blue-200 bg-white/90 backdrop-blur-xl sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
               <Layers className="text-white" size={24} />
             </div>
             <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">S3Learn</h1>
-              <p className="text-xs text-gray-500">Create, Share, Earn</p>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">S3Learn</h1>
+              <p className="text-xs text-gray-600">Create, Share, Earn</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             {user ? (
               <button
                 onClick={() => setShowDashboard(true)}
-                className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg text-sm font-medium flex items-center gap-2"
+                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg text-sm font-medium flex items-center gap-2 text-white shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition"
               >
                 <User size={16} />
                 Dashboard
@@ -853,7 +927,7 @@ export default function App() {
             ) : (
               <button
                 onClick={() => setShowAuth(true)}
-                className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg text-sm font-medium flex items-center gap-2"
+                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg text-sm font-medium flex items-center gap-2 text-white shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition"
               >
                 <LogIn size={16} />
                 Login / Join
@@ -865,28 +939,28 @@ export default function App() {
 
       {/* Hero */}
       <section className="relative py-16 px-4 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full mb-6">
-          <Sparkles className="text-indigo-400" size={16} />
-          <span className="text-indigo-300 text-sm">Join Our Creator Community & Earn Rewards</span>
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 border border-blue-300 rounded-full mb-6 shadow-sm">
+          <Sparkles className="text-blue-600" size={16} />
+          <span className="text-blue-700 text-sm font-medium">Join Our Creator Community & Earn Rewards</span>
         </div>
-        <h2 className="text-4xl md:text-5xl font-bold mb-6">
+        <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-800">
           Share Your React UI Components
-          <span className="block mt-2 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+          <span className="block mt-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-600 bg-clip-text text-transparent">
             Earn Recognition & Rewards
           </span>
         </h2>
-        <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
+        <p className="text-gray-600 mb-8 max-w-2xl mx-auto text-lg">
           Upload your components, track downloads, and unlock exclusive rewards at milestones.
           Get featured when you reach 500 downloads. Win prizes at 1000+!
         </p>
         <div className="relative max-w-xl mx-auto">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
           <input
             type="text"
             placeholder="Search components..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-12 pr-4 py-4 bg-gray-900 border border-gray-700 rounded-2xl text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            className="w-full pl-12 pr-4 py-4 bg-white border-2 border-blue-200 rounded-2xl text-gray-800 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 shadow-sm"
           />
         </div>
       </section>
@@ -899,9 +973,9 @@ export default function App() {
             { l: 'Downloads', v: stats.downloads?.toLocaleString() },
             { l: 'Creators', v: stats.categories }
           ].map((s, i) => (
-            <div key={i} className="text-center p-4 bg-gray-900/50 rounded-xl border border-gray-800">
-              <p className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">{s.v}+</p>
-              <p className="text-gray-500 text-sm">{s.l}</p>
+            <div key={i} className="text-center p-4 bg-white rounded-xl border-2 border-blue-100 shadow-sm hover:shadow-md transition">
+              <p className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{s.v}+</p>
+              <p className="text-gray-600 text-sm font-medium">{s.l}</p>
             </div>
           ))}
         </div>
@@ -915,22 +989,22 @@ export default function App() {
               <button
                 key={cat}
                 onClick={() => setCategory(cat)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm ${
                   category === cat
-                    ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white'
-                    : 'bg-gray-800 text-gray-400 hover:text-white'
+                    ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-blue-500/30'
+                    : 'bg-white text-gray-700 hover:text-blue-600 hover:bg-blue-50 border border-blue-100'
                 }`}
               >
                 {cat}
               </button>
             ))}
           </div>
-          <div className="flex gap-1 bg-gray-800 rounded-lg p-1">
-            <button onClick={() => setViewMode('grid')} className={`p-2 rounded ${viewMode === 'grid' ? 'bg-gray-700' : ''}`}>
-              <Grid size={18} className={viewMode === 'grid' ? 'text-white' : 'text-gray-500'} />
+          <div className="flex gap-1 bg-white border-2 border-blue-100 rounded-lg p-1 shadow-sm">
+            <button onClick={() => setViewMode('grid')} className={`p-2 rounded transition ${viewMode === 'grid' ? 'bg-blue-500 shadow-sm' : 'hover:bg-blue-50'}`}>
+              <Grid size={18} className={viewMode === 'grid' ? 'text-white' : 'text-gray-600'} />
             </button>
-            <button onClick={() => setViewMode('list')} className={`p-2 rounded ${viewMode === 'list' ? 'bg-gray-700' : ''}`}>
-              <List size={18} className={viewMode === 'list' ? 'text-white' : 'text-gray-500'} />
+            <button onClick={() => setViewMode('list')} className={`p-2 rounded transition ${viewMode === 'list' ? 'bg-blue-500 shadow-sm' : 'hover:bg-blue-50'}`}>
+              <List size={18} className={viewMode === 'list' ? 'text-white' : 'text-gray-600'} />
             </button>
           </div>
         </div>
@@ -941,62 +1015,62 @@ export default function App() {
         <div className="max-w-7xl mx-auto">
           {loading ? (
             <div className="text-center py-20">
-              <RefreshCw className="mx-auto animate-spin text-indigo-400" size={32} />
-              <p className="text-gray-400 mt-4">Loading...</p>
+              <RefreshCw className="mx-auto animate-spin text-blue-500" size={32} />
+              <p className="text-gray-600 mt-4 font-medium">Loading amazing components...</p>
             </div>
           ) : components.length === 0 ? (
-            <div className="text-center py-20">
-              <Code className="mx-auto text-gray-600" size={48} />
-              <p className="text-gray-400 mt-4">No components found</p>
+            <div className="text-center py-20 bg-white rounded-2xl border-2 border-blue-100 shadow-sm">
+              <Code className="mx-auto text-gray-400" size={48} />
+              <p className="text-gray-600 mt-4 font-medium">No components found</p>
             </div>
           ) : (
             <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
               {components.map((comp, idx) => (
-                <div key={comp._id} className={`group bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden hover:border-gray-700 transition-all hover:shadow-xl hover:shadow-purple-500/10 ${viewMode === 'list' ? 'flex' : ''}`}>
+                <div key={comp._id} className={`group bg-white rounded-2xl border-2 border-blue-100 overflow-hidden hover:border-blue-300 transition-all hover:shadow-xl hover:shadow-blue-500/20 ${viewMode === 'list' ? 'flex' : ''}`}>
                   <div className={`relative overflow-hidden ${viewMode === 'list' ? 'w-48 flex-shrink-0' : 'aspect-video'}`}>
-                    <div className={`absolute inset-0 bg-gradient-to-br ${gradients[idx % gradients.length]} opacity-30`} />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${gradients[idx % gradients.length]} opacity-20`} />
                     {comp.previewImage ? (
                       <img src={comp.previewUrl} alt={comp.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     ) : (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Layers className="text-white/50" size={48} />
+                      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
+                        <Layers className="text-blue-300" size={48} />
                       </div>
                     )}
                     {comp.previewVideo && (
-                      <div className="absolute top-3 left-3 px-2 py-1 bg-indigo-500 rounded-full flex items-center gap-1">
+                      <div className="absolute top-3 left-3 px-2 py-1 bg-blue-500 rounded-full flex items-center gap-1 shadow-lg">
                         <Zap className="text-white" size={12} />
                         <span className="text-xs text-white font-medium">Video</span>
                       </div>
                     )}
-                    <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 bg-black/50 backdrop-blur rounded-full">
-                      <Star className="text-yellow-400 fill-yellow-400" size={12} />
-                      <span className="text-xs text-white">{comp.stars}</span>
+                    <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 bg-white/90 backdrop-blur rounded-full shadow-sm">
+                      <Star className="text-yellow-500 fill-yellow-500" size={12} />
+                      <span className="text-xs text-gray-700 font-medium">{comp.stars}</span>
                     </div>
                   </div>
                   <div className="p-5 flex-1">
                     <div className="flex justify-between mb-2">
                       <div>
-                        <h3 className="font-semibold text-white group-hover:text-indigo-400 transition">{comp.name}</h3>
-                        <p className="text-sm text-gray-500">{comp.category}</p>
+                        <h3 className="font-semibold text-gray-800 group-hover:text-blue-600 transition">{comp.name}</h3>
+                        <p className="text-sm text-gray-600 font-medium">{comp.category}</p>
                         {comp.creator && (
-                          <p className="text-xs text-indigo-400 mt-1">
+                          <p className="text-xs text-blue-600 mt-1">
                             by {comp.creator.displayName || comp.creatorName}
                             {comp.creator.level > 5 && <span className="ml-1">👑</span>}
                           </p>
                         )}
                       </div>
-                      <span className="text-xs text-gray-500 flex items-center gap-1">
+                      <span className="text-xs text-gray-500 flex items-center gap-1 font-medium">
                         <Download size={12} />{comp.downloads}
                       </span>
                     </div>
                     <div className="flex flex-wrap gap-1 mb-4">
-                      {comp.tags?.slice(0, 3).map(t => <span key={t} className="px-2 py-0.5 bg-gray-800 rounded text-xs text-gray-400">#{t}</span>)}
+                      {comp.tags?.slice(0, 3).map(t => <span key={t} className="px-2 py-0.5 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700 font-medium">#{t}</span>)}
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={() => setPreview(comp)} className="flex-1 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition">
+                      <button onClick={() => setPreview(comp)} className="flex-1 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition text-gray-700 border border-gray-200">
                         <Eye size={16} /> Preview
                       </button>
-                      <button onClick={() => handleDownload(comp)} className="flex-1 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg text-sm font-medium flex items-center justify-center gap-2 hover:opacity-90 transition">
+                      <button onClick={() => handleDownload(comp)} className="flex-1 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg text-sm font-medium flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-blue-500/30 transition text-white shadow-md shadow-blue-500/20">
                         <Download size={16} /> Download
                       </button>
                     </div>
