@@ -11,8 +11,9 @@ const componentSchema = new mongoose.Schema({
     enum: ['Dashboard', 'Cards', 'Forms', 'Tables', 'Landing', 'Navigation', 'Modals', 'Charts', 'Other']
   },
   tags: [{ type: String, trim: true, lowercase: true }],
-  previewImage: { type: String, required: true },
-  previewVideo: { type: String }, // Optional video preview
+  previewImage: { type: String, required: true }, // Main preview image (backward compatibility)
+  images: [{ type: String }], // Array of up to 5 images
+  previewVideo: { type: String }, // Optional video preview (S3 key or local filename)
   zipFile: { type: String, required: true },
   demoUrl: { type: String, trim: true }, // URL to live interactive demo (CodeSandbox, StackBlitz, etc)
   downloads: { type: Number, default: 0 },
@@ -46,6 +47,14 @@ componentSchema.virtual('previewUrl').get(function() {
     return `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/${this.previewImage}`;
   }
   return `/uploads/previews/${this.previewImage}`;
+});
+
+componentSchema.virtual('imagesUrls').get(function() {
+  if (!this.images || this.images.length === 0) return [];
+  const baseUrl = process.env.USE_S3 === 'true' 
+    ? `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/`
+    : '/uploads/previews/';
+  return this.images.map(img => baseUrl + img);
 });
 
 componentSchema.virtual('previewVideoUrl').get(function() {

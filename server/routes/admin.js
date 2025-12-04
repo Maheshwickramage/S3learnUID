@@ -48,7 +48,7 @@ const upload = multer({
   fileFilter: (req, file, cb) => {
     if (file.fieldname === 'zipFile' && (file.mimetype === 'application/zip' || file.originalname.endsWith('.zip'))) {
       cb(null, true);
-    } else if (file.fieldname === 'previewImage' && file.mimetype.startsWith('image/')) {
+    } else if ((file.fieldname === 'previewImage' || file.fieldname === 'images') && file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else if (file.fieldname === 'previewVideo' && file.mimetype.startsWith('video/')) {
       cb(null, true);
@@ -84,12 +84,22 @@ router.get('/verify', adminAuth, (req, res) => {
 });
 
 // Upload component (with user auth)
-router.post('/upload', authMiddleware, upload.fields([{ name: 'zipFile', maxCount: 1 }, { name: 'previewImage', maxCount: 1 }, { name: 'previewVideo', maxCount: 1 }]), async (req, res) => {
+router.post('/upload', authMiddleware, upload.fields([
+  { name: 'zipFile', maxCount: 1 }, 
+  { name: 'previewImage', maxCount: 1 }, 
+  { name: 'images', maxCount: 5 },
+  { name: 'previewVideo', maxCount: 1 }
+]), async (req, res) => {
   try {
     const { name, description, category, tags, version, demoUrl } = req.body;
     if (!req.files?.zipFile?.[0] || !req.files?.previewImage?.[0]) {
-      return res.status(400).json({ success: false, message: 'Both files required' });
+      return res.status(400).json({ success: false, message: 'ZIP file and main preview image are required' });
     }
+    
+    // Process additional images (max 5)
+    const additionalImages = req.files?.images?.map(file => 
+      USE_S3 ? file.key : file.filename
+    ) || [];
     
     const component = new Component({
       name,
@@ -97,6 +107,7 @@ router.post('/upload', authMiddleware, upload.fields([{ name: 'zipFile', maxCoun
       category,
       tags: tags ? tags.split(',').map(t => t.trim().toLowerCase()) : [],
       previewImage: USE_S3 ? req.files.previewImage[0].key : req.files.previewImage[0].filename,
+      images: additionalImages,
       previewVideo: req.files.previewVideo?.[0] ? (USE_S3 ? req.files.previewVideo[0].key : req.files.previewVideo[0].filename) : undefined,
       zipFile: USE_S3 ? req.files.zipFile[0].key : req.files.zipFile[0].filename,
       demoUrl: demoUrl || '',

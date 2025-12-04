@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Eye, Download, Search, Grid, List, Star, Code, Layers, Zap, X, Upload, Plus, Trash2, Lock, LogOut, RefreshCw, AlertCircle, User, Award, TrendingUp, Gift, Crown, Sparkles, LogIn, UserPlus } from 'lucide-react';
+import { Eye, Download, Search, Grid, List, Star, Code, Layers, Zap, X, Upload, Plus, Trash2, Lock, LogOut, RefreshCw, AlertCircle, User, Award, TrendingUp, Gift, Crown, Sparkles, LogIn, UserPlus, Play } from 'lucide-react';
 import { api } from './services/api';
 import RewardPopup from './components/RewardPopup';
 
@@ -143,13 +143,25 @@ function AuthModal({ onClose, onSuccess }) {
 function PreviewModal({ component, onClose }) {
   const [viewMode, setViewMode] = useState('preview'); // 'preview' or 'interactive'
   const [iframeLoaded, setIframeLoaded] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   
   // Generate interactive preview URL (CodeSandbox embed URL)
   const getInteractivePreviewUrl = () => {
-    // For now, we'll use the preview image, but you can later add a demoUrl field to components
-    // that points to CodeSandbox, StackBlitz, or your own hosted demo
     return component.demoUrl || null;
   };
+
+  // Get all images for gallery (main preview + additional images)
+  const getAllImages = () => {
+    const images = [component.previewUrl];
+    if (component.imagesUrls && component.imagesUrls.length > 0) {
+      images.push(...component.imagesUrls);
+    }
+    return images;
+  };
+
+  const allImages = getAllImages();
+  const hasMultipleImages = allImages.length > 1;
+  const hasVideo = component.previewVideo && component.previewVideoUrl;
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
@@ -217,26 +229,67 @@ function PreviewModal({ component, onClose }) {
                   sandbox="allow-scripts allow-same-origin allow-modals"
                 />
               </div>
-            ) : component.previewVideo ? (
+            ) : hasVideo ? (
               <video 
                 controls 
-                poster={component.previewUrl}
+                poster={allImages[0]}
                 className="w-full h-full object-contain bg-black"
               >
                 <source src={component.previewVideoUrl} type="video/mp4" />
                 <source src={component.previewVideoUrl} type="video/webm" />
                 Your browser doesn't support video playback.
               </video>
-            ) : component.previewImage ? (
-              <img src={component.previewUrl} alt={component.name} className="w-full h-full object-contain" />
             ) : (
-              <div className="flex items-center justify-center h-full text-center p-8">
-                <div>
-                  <Layers className="mx-auto text-indigo-400 mb-4" size={64} />
-                  <p className="text-white text-xl font-semibold">{component.name}</p>
-                  <p className="text-gray-400 mt-2">{component.description}</p>
-                </div>
+              <div className="relative w-full h-full">
+                <img 
+                  src={allImages[selectedImageIndex]} 
+                  alt={`${component.name} - View ${selectedImageIndex + 1}`} 
+                  className="w-full h-full object-contain" 
+                />
+                
+                {/* Image Gallery Navigation */}
+                {hasMultipleImages && (
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 bg-black/50 backdrop-blur-sm px-4 py-2 rounded-full">
+                    {allImages.map((img, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setSelectedImageIndex(idx)}
+                        className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition ${
+                          selectedImageIndex === idx ? 'border-blue-500 scale-110' : 'border-transparent hover:border-gray-400'
+                        }`}
+                      >
+                        <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Image Counter */}
+                {hasMultipleImages && (
+                  <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full text-white text-sm">
+                    {selectedImageIndex + 1} / {allImages.length}
+                  </div>
+                )}
               </div>
+            )}
+          </div>
+          
+          {/* Media Type Indicator */}
+          <div className="flex gap-2 mt-3 justify-center">
+            {hasVideo && (
+              <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs flex items-center gap-1">
+                <Play size={12} /> Video Available
+              </span>
+            )}
+            {hasMultipleImages && (
+              <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs flex items-center gap-1">
+                <Layers size={12} /> {allImages.length} Images
+              </span>
+            )}
+            {getInteractivePreviewUrl() && (
+              <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-xs flex items-center gap-1">
+                <Zap size={12} /> Interactive Demo
+              </span>
             )}
           </div>
         </div>
@@ -255,7 +308,7 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
   const [stats, setStats] = useState(null);
   const [error, setError] = useState('');
   const [form, setForm] = useState({ name: '', category: 'Dashboard', tags: '', description: '', demoUrl: '' });
-  const [files, setFiles] = useState({ zip: null, preview: null, video: null });
+  const [files, setFiles] = useState({ zip: null, preview: null, images: [], video: null });
   const [activeTab, setActiveTab] = useState('stats'); // stats, upload, profile
   const [newReward, setNewReward] = useState(null);
   const [showRewardPopup, setShowRewardPopup] = useState(false);
@@ -305,6 +358,8 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
     if (form.demoUrl) formData.append('demoUrl', form.demoUrl);
     formData.append('zipFile', files.zip);
     formData.append('previewImage', files.preview);
+    // Add multiple images (max 5)
+    files.images.forEach(img => formData.append('images', img));
     if (files.video) formData.append('previewVideo', files.video);
 
     try {
@@ -314,7 +369,7 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
       if (data.success) {
         setUploadProgress(100);
         setForm({ name: '', category: 'Dashboard', tags: '', description: '', demoUrl: '' });
-        setFiles({ zip: null, preview: null, video: null });
+        setFiles({ zip: null, preview: null, images: [], video: null });
         setTimeout(() => setUploadProgress(0), 1000);
         alert('🎉 Component uploaded successfully!');
         if (onUploadSuccess) onUploadSuccess();
@@ -340,6 +395,7 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
     let total = 0;
     if (files.zip) total += files.zip.size;
     if (files.preview) total += files.preview.size;
+    if (files.images) files.images.forEach(img => total += img.size);
     if (files.video) total += files.video.size;
     return total;
   };
@@ -559,6 +615,72 @@ function CreatorDashboard({ user, token, onClose, onUploadSuccess, onLogout }) {
                   )}
                   <input type="file" accept="video/*" className="hidden" onChange={e => setFiles({...files, video: e.target.files[0]})} />
                 </label>
+              </div>
+
+              {/* Additional Images Section (Max 5) */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
+                  Additional Images (Max 5)
+                  <span className="text-xs text-gray-500">Optional - Show multiple views of your component</span>
+                </label>
+                <div className="grid grid-cols-5 gap-2">
+                  {[...Array(5)].map((_, idx) => {
+                    const hasImage = files.images[idx];
+                    return (
+                      <label 
+                        key={idx}
+                        className={`relative border-2 border-dashed rounded-lg p-3 text-center cursor-pointer transition aspect-square flex flex-col items-center justify-center ${
+                          hasImage ? 'border-blue-500 bg-blue-500/10' : 'border-gray-600 hover:border-blue-500'
+                        } ${files.images.length >= 5 && !hasImage ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      >
+                        {hasImage ? (
+                          <>
+                            <img src={URL.createObjectURL(hasImage)} alt={`Preview ${idx+1}`} className="w-full h-full object-cover rounded" />
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                const newImages = [...files.images];
+                                newImages.splice(idx, 1);
+                                setFiles({...files, images: newImages});
+                              }}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition"
+                            >
+                              <X size={12} />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <Plus className="text-gray-500" size={20} />
+                            <p className="text-xs text-gray-500 mt-1">{idx + 1}</p>
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          disabled={files.images.length >= 5 && !hasImage}
+                          onChange={e => {
+                            if (e.target.files[0]) {
+                              const newImages = [...files.images];
+                              if (hasImage) {
+                                newImages[idx] = e.target.files[0];
+                              } else {
+                                newImages.push(e.target.files[0]);
+                              }
+                              setFiles({...files, images: newImages});
+                            }
+                          }}
+                        />
+                      </label>
+                    );
+                  })}
+                </div>
+                {files.images.length > 0 && (
+                  <p className="text-xs text-blue-400 flex items-center gap-1">
+                    <Sparkles size={12} /> {files.images.length} image{files.images.length > 1 ? 's' : ''} added
+                  </p>
+                )}
               </div>
 
               {/* File Size Info */}

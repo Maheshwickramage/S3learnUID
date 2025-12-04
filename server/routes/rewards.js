@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Reward = require('../models/Reward');
 const User = require('../models/User');
-const auth = require('../middleware/optionalAuth');
+const auth = require('../middleware/OptionalAuth');
 
 // Get user's rewards
 router.get('/my-rewards', auth, async (req, res) => {
